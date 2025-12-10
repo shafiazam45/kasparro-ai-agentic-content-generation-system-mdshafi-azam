@@ -1,0 +1,19 @@
+{
+  "product_a": {
+    "name": "{{productA.name}}",
+    "price": {{productA.price}},
+    "ingredients": {{productA.ingredients}},
+    "benefits": {{productA.benefits}}
+  },
+  "product_b": {
+    "name": "{{productB.name}}",
+    "price": {{productB.price}},
+    "ingredients": {{productB.ingredients}},
+    "benefits": {{productB.benefits}}
+  },
+  "comparison": {
+    "price_diff": "{{comparison.price_diff}}",
+    "ingredient_comparison": {{comparison.ingredient_comparison}},
+    "benefit_comparison": {{comparison.benefit_comparison}}
+  }
+}

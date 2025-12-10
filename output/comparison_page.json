@@ -1,0 +1,51 @@
+{
+  "product_a": {
+    "name": "GlowBoost Vitamin C Serum",
+    "price": 699,
+    "ingredients": [
+      "Vitamin C",
+      "Hyaluronic Acid"
+    ],
+    "benefits": [
+      "Brightening",
+      "Fades dark spots"
+    ]
+  },
+  "product_b": {
+    "name": "DermaRadiance Serum",
+    "price": 799,
+    "ingredients": [
+      "Vitamin C",
+      "Niacinamide"
+    ],
+    "benefits": [
+      "Brightening",
+      "Oil balancing"
+    ]
+  },
+  "comparison": {
+    "price_diff": "DermaRadiance Serum is ₹100 more expensive than GlowBoost Vitamin C Serum.",
+    "ingredient_comparison": {
+      "common": [
+        "Vitamin C"
+      ],
+      "a_only": [
+        "Hyaluronic Acid"
+      ],
+      "b_only": [
+        "Niacinamide"
+      ]
+    },
+    "benefit_comparison": {
+      "a_only": [
+        "Fades Dark Spots"
+      ],
+      "b_only": [
+        "Oil Balancing"
+      ],
+      "common": [
+        "Brightening"
+      ]
+    }
+  }
+}
