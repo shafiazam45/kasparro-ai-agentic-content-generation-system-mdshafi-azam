@@ -1,8 +1,6 @@
 """
 page_assembly_agent.py
-Responsibility:
-- Use the template engine + logic blocks + questions to build final pages
-- Write JSON outputs to output/ folder
+Assembles pages using templates and logic blocks; writes JSON outputs.
 """
 
 import json
@@ -21,7 +19,6 @@ from agents.logic_block_agent import (
     faq_answer_block,
 )
 
-
 OUTPUT_DIR = Path(__file__).resolve().parents[1] / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -33,7 +30,6 @@ def build_faq_page(product: Dict[str, Any], questions: List[Dict[str, str]]) -> 
     for q in selected:
         ans = faq_answer_block(q["question"], product)
         faqs.append({"question": q["question"], "answer": ans, "category": q.get("category")})
-    context = {"product": product["name"], "faqs": faqs}
     page_json = render_template(template_text, {"product": product, "faqs": faqs})
     return page_json
 

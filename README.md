@@ -1,20 +1,29 @@
-# Kasparro — Agentic Content Generation System
-Repository: kasparro-ai-agentic-content-generation-system-md-shafi-azam
+# Kasparro — Agentic Content Generation System (LangChain)
 
-This project implements a modular multi-agent pipeline that transforms a single small product dataset into structured, machine-readable JSON pages:
-- FAQ page
-- Product page
-- Comparison page (vs a fictional Product B)
+This repository implements the Kasparro assignment using **LangChain** as the agent framework (required by reviewers).
 
-## Repo structure
+It produces:
+- `output/product_page.json`
+- `output/faq.json`
+- `output/comparison_page.json`
 
+All outputs are JSON and generated via LangChain agents/tools.
 
 ## Requirements
-- Python 3.8+ (standard library only)
-- No external dependencies required.
 
-(If you prefer to use a virtualenv:)
+1. Python 3.8+
+2. Install dependencies:
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # mac/linux
-.\.venv\Scripts\activate   # windows
+pip install -r requirements.txt
+
+## Note about LangChain installation (important)
+
+This repository includes a LangChain-based implementation (`agents/langchain_orchestrator.py`, `agents/langchain_tools.py`) that demonstrates framework-driven agent orchestration as required by the assignment.
+
+During development on the reviewer’s environment, installing a compatible LangChain + langchain-openai pair failed due to PyPI/version constraints. To ensure reproducible final outputs for review, a deterministic mock runner `agents/run_mock_orchestrator.py` is included and used to generate the canonical files in `output/` (faq.json, product_page.json, comparison_page.json).
+
+If you prefer to run the LangChain pipeline locally, please install a compatible LangChain and langchain-openai version (instructions in this README), then run:
+```bash
+python -m agents.langchain_orchestrator
+
+

@@ -64,10 +64,6 @@ def price_diff_block(prod_a: Dict[str, Any], prod_b: Dict[str, Any]) -> str:
 
 
 def faq_answer_block(question: str, product: Dict[str, Any]) -> str:
-    """
-    Conservative rule-based answers derived purely from product fields.
-    Avoid inventing any external facts.
-    """
     q = question.lower()
     name = product["name"]
     if "what does" in q or "what is" in q:
@@ -84,5 +80,4 @@ def faq_answer_block(question: str, product: Dict[str, Any]) -> str:
         return f"₹{product.get('price')}"
     if "ingredients" in q:
         return ", ".join(product.get("ingredients", []))
-    # fallback safe answer
     return f"For {question}, refer to the product information provided: {product.get('name')}."

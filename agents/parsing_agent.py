@@ -2,7 +2,6 @@
 parsing_agent.py
 Responsibility:
 - Validate & normalize the provided product dataset into a strict internal model.
-No external calls. Stateless.
 """
 
 from typing import Dict, Any, List
@@ -32,7 +31,6 @@ def parse_raw_dataset(raw: Dict[str, Any]) -> Dict[str, Any]:
     name = raw["Product Name"].strip()
     price_raw = raw["Price"]
     price = _parse_price(price_raw)
-
     concentration = raw["Concentration"].strip()
     skin_type = _ensure_list(raw["Skin Type"])
     ingredients = _ensure_list(raw["Key Ingredients"])

@@ -1,9 +1,11 @@
+# agents/template_engine_agent.py
 """
-template_engine_agent.py (fixed)
-Responsibility:
-- Load JSON templates from /templates and render them using content blocks.
-- Robust templating engine: detects if a placeholder is inside string quotes and
-  adapts replacement so final string is valid JSON before parsing.
+Robust template engine for JSON templates.
+
+- Handles placeholders like {{key}} or {{product.name}}.
+- Detects whether the placeholder appears inside JSON string quotes and
+  injects appropriately to avoid double-quoting.
+- Embeds lists/dicts as JSON literals.
 """
 
 import json
@@ -12,7 +14,6 @@ from pathlib import Path
 from typing import Dict, Any
 
 TEMPLATES_DIR = Path(__file__).resolve().parents[1] / "templates"
-
 PLACEHOLDER_PATTERN = re.compile(r"\{\{\s*([a-zA-Z0-9_\.]+)\s*\}\}")
 
 
@@ -24,7 +25,7 @@ def load_template(name: str) -> str:
 
 
 def _lookup_context(context: Dict[str, Any], key: str):
-    """Look up nested key using dot notation. Return None if missing."""
+    """Lookup nested key via dot notation; return None if missing."""
     parts = key.split(".")
     cur = context
     for p in parts:
@@ -38,15 +39,13 @@ def _lookup_context(context: Dict[str, Any], key: str):
 
 def render_template(template_text: str, context: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Replaces placeholders in template_text using context dictionary.
+    Replace placeholders in template_text using context dict.
 
     Behavior:
-    - If the placeholder is inside JSON string quotes (like: "field": "{{some.key}}"),
-      and the replacement is a primitive (str/int/float/bool/None), we inject the
-      primitive value properly escaped *without adding an extra pair of quotes*.
-      This prevents double-quoting like: "\"value\"" which can break JSON parsing.
-    - If replacement is list/dict, we inject its JSON literal (so templates should
-      leave the placeholder unquoted when expecting arrays/objects).
+    - If placeholder is inside quotes in the template and the replacement is a primitive string,
+      the function injects the escaped inner string content (without additional outer quotes).
+    - If placeholder is unquoted and replacement is primitive, inject JSON literal (with quotes for strings).
+    - If replacement is list/dict, inject JSON literal (templates must leave such placeholders unquoted).
     """
 
     filled_parts = []
@@ -56,46 +55,54 @@ def render_template(template_text: str, context: Dict[str, Any]) -> Dict[str, An
         start, end = match.span()
         key = match.group(1)
 
+        # append text before match
         filled_parts.append(template_text[last_index:start])
 
+        # detect surrounding characters to check if placeholder is inside JSON quotes
         before = template_text[:start]
         after = template_text[end:]
         char_before = before[-1] if before else ""
         char_after = after[0] if after else ""
-
         inside_quotes = (char_before == '"' and char_after == '"')
 
+        # lookup value
         value = _lookup_context(context, key)
 
+        # If value missing -> insert null (respect quotes: if inside quotes leave empty string)
         if value is None:
-            replacement_text = "null"
             if inside_quotes:
-                replacement_text = ""
-            filled_parts.append(replacement_text)
+                filled_parts.append("")  # keep template quotes, insert empty string
+            else:
+                filled_parts.append("null")
             last_index = end
             continue
 
-        if isinstance(value, (dict, list)):
-            replacement_text = json.dumps(value, ensure_ascii=False)
-            filled_parts.append(replacement_text)
+        # If value is list/dict -> insert JSON literal (templates should have unquoted placeholder)
+        if isinstance(value, (list, dict)):
+            filled_parts.append(json.dumps(value, ensure_ascii=False))
             last_index = end
             continue
 
+        # For primitives (str/int/float/bool)
+        # If placeholder is inside quotes -> produce JSON string and strip outer quotes
         if inside_quotes:
             json_prim = json.dumps(value, ensure_ascii=False)
-            if len(json_prim) >= 2 and json_prim[0] == '"' and json_prim[-1] == '"':
+            # If json_prim is a quoted string, strip the outer quotes to avoid double quotes
+            if isinstance(json_prim, str) and len(json_prim) >= 2 and json_prim[0] == '"' and json_prim[-1] == '"':
                 inner = json_prim[1:-1]
             else:
                 inner = json_prim
             filled_parts.append(inner)
         else:
-            replacement_text = json.dumps(value, ensure_ascii=False)
-            filled_parts.append(replacement_text)
+            # not inside quotes -> inject JSON literal (strings will be quoted)
+            filled_parts.append(json.dumps(value, ensure_ascii=False))
 
         last_index = end
 
+    # append remainder
     filled_parts.append(template_text[last_index:])
     filled = "".join(filled_parts)
 
+    # parse into JSON and return
     return json.loads(filled)
 

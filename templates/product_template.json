@@ -1,7 +1,7 @@
 {
   "product_name": "{{product.name}}",
   "concentration": "{{product.concentration}}",
-  "summary": {{product.summary}},
+  "summary": "{{product.summary}}",
   "key_ingredients": {{product.key_ingredients}},
   "benefits": {{product.benefits}},
   "how_to_use": "{{product.how_to_use}}",
@@ -9,3 +9,4 @@
   "price": {{product.price}},
   "skin_type": {{product.skin_type}}
 }
+
